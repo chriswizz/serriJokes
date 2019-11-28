@@ -10,22 +10,37 @@
     curl_close($client);
     return $response;
   }
-
-  $allSerriJokes[] = [];
-  while(sizeof($allSerriJokes)<77) {
-    $url = "http://api.serri.codefactory.live/random/";
-    $jokeJson = curl_get($url);
-    $jokeObj = json_decode($jokeJson);
-    $jokeArr = [$jokeObj->id_joke, $jokeObj->joke];
-
-    if (!in_array($jokeArr, $allSerriJokes)) {
-      $allSerriJokes[] = $jokeArr;
-    }
-  }
-  $allSerriJokes[] = asort($allSerriJokes);
-  // echo "Size: ".sizeof($allSerriJokes)."<br>";
-  foreach ($allSerriJokes as $joke) {
-    echo implode(", ", $joke)."<br>";
-  }
-
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Serri Jokes</title>
+</head>
+<body>
+  <p>Number of jokes: <strong id="number"></strong></p>
+  <?php
+    for ($i=24; $i<100; $i++) {
+      echo "<span>".$i.". </span><span id='".$i."'></span><br>";
+    }
+    $allSerriJokes[] = [];
+    while(sizeof($allSerriJokes)<77) {
+      $url = "http://api.serri.codefactory.live/random/";
+      $jokeJson = curl_get($url);
+      $jokeObj = json_decode($jokeJson);
+      $allSerriJokes[intval($jokeObj->id_joke)] = $jokeObj->joke;
+      ksort($allSerriJokes);
+      foreach ($allSerriJokes as $key => $value) {
+        ?>
+          <script>document.getElementById('<?php echo $key; ?>').innerHTML = "<?php echo $value; ?>";</script>
+          <script>document.getElementById('number').innerHTML = "<?php echo (sizeof($allSerriJokes)-1) ?>";</script>
+        <?php
+      }
+    }
+    echo "<br>";
+    var_dump($allSerriJokes);
+  ?>
+
+</body>
+</html>
